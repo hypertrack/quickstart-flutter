@@ -22,6 +22,19 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <string>&lt;YOUR APP&gt; needs to access this device's location for &lt;REASON&gt;</string>
+  <key>NSLocationAlwaysUsageDescription</key>
+  <string>&lt;YOUR APP&gt; needs to access this device's location for &lt;REASON&gt;</string>
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>&lt;YOUR APP&gt; needs to access this device's location for &lt;REASON&gt;</string>
+  <key>NSMotionUsageDescription</key>
+  <string>&lt;YOUR APP&gt; needs to access this device's motion updates for &lt;REASON&gt;</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
