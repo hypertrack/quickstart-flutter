@@ -1,0 +1,11 @@
+framework module HyperTrack {
+  umbrella header "HyperTrack-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module HyperTrack.Swift {
+    header "HyperTrack-Swift.h"
+    requires objc
+}

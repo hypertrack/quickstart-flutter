@@ -1,0 +1,6 @@
+framework module hypertrack_plugin {
+  umbrella header "hypertrack_plugin-umbrella.h"
+
+  export *
+  module * { export * }
+}
