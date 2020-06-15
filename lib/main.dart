@@ -33,6 +33,7 @@ class _HyperTrackQuickStartState extends State<HyperTrackQuickStart> {
     String result = 'failure';
     try {
       sdk = await HyperTrack.initialize(key);
+      updateButtonState();
       result = 'initialized';
       sdk.setDeviceName(deviceName);
       sdk.setDeviceMetadata({"source": "flutter sdk"});
@@ -41,6 +42,7 @@ class _HyperTrackQuickStartState extends State<HyperTrackQuickStart> {
           setState(() {
             _result = '$event';
           });
+          updateButtonState();
         }
       });
     } catch (e) {
@@ -111,15 +113,6 @@ class _HyperTrackQuickStartState extends State<HyperTrackQuickStart> {
                     } else {
                       start();
                     }
-                    setState(() {
-                      if (this.buttonLabel == "Start Tracking") {
-                        this.buttonLabel = "Stop Tracking";
-                        this.buttonColor = Colors.red;
-                      } else {
-                        this.buttonLabel = "Start Tracking";
-                        this.buttonColor = Colors.green;
-                      }
-                    });
                   },
                   child: displayButton(),
                 ),
@@ -129,5 +122,20 @@ class _HyperTrackQuickStartState extends State<HyperTrackQuickStart> {
         ),
       ),
     );
+  }
+
+  void updateButtonState() async {
+    final isRunning = await sdk.isRunning();
+    if (isRunning) {
+      setState(() {
+        this.buttonLabel = "Stop Tracking";
+        this.buttonColor = Colors.red;
+      });
+    } else {
+      setState(() {
+        this.buttonLabel = "Start Tracking";
+        this.buttonColor = Colors.green;
+      });
+    }
   }
 }
