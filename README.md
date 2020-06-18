@@ -19,7 +19,7 @@ Install Flutter package and setup the environment for both Android and IOS using
 
 ### Set your Publishable Key
 
-Open the Quickstart project inside the workspace and set your Publishable Key (from [Setup page](https://dashboard.hypertrack.com/setup)) inside the placeholder in the [`main.dart`] file.
+Open the Quickstart project inside the workspace and set your Publishable Key (from [Setup page](https://dashboard.hypertrack.com/setup)) inside the placeholder in the [`main.dart`](https://github.com/hypertrack/quickstart-flutter/blob/master/lib/main.dart#L14) file.
 
 ### Run the app
 
