@@ -1,0 +1,21 @@
+ios/build/*
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Mac
+.DS_Store
+
+# Flutter + Dart
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+doc/api/
+
+# Firebase
+android/app/google-services.json
