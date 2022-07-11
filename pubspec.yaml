@@ -28,7 +28,9 @@ dependencies:
     git:
       url: https://github.com/hypertrack/sdk-flutter.git #Place your Github repo here.
       ref: master # specify branch name or commit hash here
-      
+  firebase_core: ^1.19.1
+  firebase_messaging: ^11.4.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
