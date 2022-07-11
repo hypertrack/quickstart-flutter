@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hypertrack_plugin/const/constants.dart';
 import 'package:hypertrack_plugin/hypertrack.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -23,6 +27,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     initHyperTrack();
   }
 
@@ -80,6 +85,7 @@ class _MyAppState extends State<MyApp> {
 
   void initHyperTrack() async {
     _hypertrackFlutterPlugin = await HyperTrack().initialize(_publishableKey);
+    _hypertrackFlutterPlugin.enableDebugLogging();
     _hypertrackFlutterPlugin.setDeviceName(_deviceName);
     _hypertrackFlutterPlugin.setDeviceMetadata({"source": "flutter sdk"});
     _hypertrackFlutterPlugin.onTrackingStateChanged
