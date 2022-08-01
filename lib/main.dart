@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hypertrack_plugin/const/constants.dart';
 import 'package:hypertrack_plugin/hypertrack.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -15,14 +18,17 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   HyperTrack _hypertrackFlutterPlugin = HyperTrack();
-  final String _publishableKey = "<-- PLACE PUBLIC KEY HERE -->";
-  final String _deviceName = '<-- DEVICE NAME GOES HERE -->';
+  final String _publishableKey =
+      "KdoMYSdE4MFWHEjdOO32xGP2jpmeyV0A0BPtRXUEfUiZfhPm5IfA5j"
+      "NmQWJZ7GfQBhUtE8SpdoRbtndPGyGofA";
+  final String _deviceName = 'RMv2';
   String _result = 'Not initialized';
   bool isRunning = false;
 
   @override
   void initState() {
     super.initState();
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     initHyperTrack();
   }
 
@@ -50,17 +56,15 @@ class _MyAppState extends State<MyApp> {
                 alignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: isRunning ? Colors.red : Colors.green),
+                    style: ElevatedButton.styleFrom(
+                        primary: isRunning ? Colors.red : Colors.green),
                     onPressed: () {
                       isRunning
                           ? _hypertrackFlutterPlugin.stop()
                           : _hypertrackFlutterPlugin.start();
                       setState(() {});
                     },
-                    child:
-                    Text(isRunning ? "Stop Tracking" : "Start Tracking"),
-
-
+                    child: Text(isRunning ? "Stop Tracking" : "Start Tracking"),
                   ),
                   ElevatedButton(
                     onPressed: () async =>
@@ -80,6 +84,7 @@ class _MyAppState extends State<MyApp> {
 
   void initHyperTrack() async {
     _hypertrackFlutterPlugin = await HyperTrack().initialize(_publishableKey);
+    _hypertrackFlutterPlugin.enableDebugLogging();
     _hypertrackFlutterPlugin.setDeviceName(_deviceName);
     _hypertrackFlutterPlugin.setDeviceMetadata({"source": "flutter sdk"});
     _hypertrackFlutterPlugin.onTrackingStateChanged
@@ -99,7 +104,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-String getTrackingStatus (TrackingStateChange event) {
+String getTrackingStatus(TrackingStateChange event) {
   Map<TrackingStateChange, String> statusMap = {
     TrackingStateChange.start: "Tracking Started",
     TrackingStateChange.stop: "Tracking Stop",
