@@ -71,6 +71,25 @@ class _MyAppState extends State<MyApp> {
                         _hypertrackFlutterPlugin.syncDeviceSettings(),
                     child: const Text("Sync Settings"),
                   ),
+                  ElevatedButton(
+                    onPressed: () async => subscribeToAvailability(),
+                    child: const Text("Stream of Availablity"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async =>
+                        print(_hypertrackFlutterPlugin.getAvailability()),
+                    child: const Text("get Available"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async => _hypertrackFlutterPlugin
+                        .setAvailability(Availability.Available),
+                    child: const Text("set Availability"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async =>
+                        _hypertrackFlutterPlugin.getLatestLocation(),
+                    child: const Text("get latest location"),
+                  ),
                 ],
               ),
             ],
@@ -101,6 +120,13 @@ class _MyAppState extends State<MyApp> {
     final temp = await _hypertrackFlutterPlugin.isRunning();
     isRunning = temp;
     setState(() {});
+  }
+
+  subscribeToAvailability() async {
+    Stream _avail = await _hypertrackFlutterPlugin.subscribeToAvailability;
+    _avail.listen((event) {
+      print(event.toString() + "123");
+    });
   }
 }
 

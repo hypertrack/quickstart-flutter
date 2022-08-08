@@ -117,9 +117,9 @@ packages:
   hypertrack_plugin:
     dependency: "direct main"
     description:
-      name: hypertrack_plugin
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../sdk-flutter"
+      relative: true
+    source: path
     version: "0.4.1"
   js:
     dependency: transitive
