@@ -128,6 +128,11 @@ curl -X POST \
   https://v3.api.hypertrack.com/trips/{trip_id}
 ```
 
+## Run Test Cases
+open terminal and run this command
+
+flutter run test/widget_test.dart (folderName/test file name)
+
 
 ### Track trips with geofences
 
