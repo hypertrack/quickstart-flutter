@@ -1,30 +1,46 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:quickstart_flutter/main.dart';
+import 'package:hypertrack_plugin/hypertrack.dart';
+import 'package:hypertrack_plugin/const/constants.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  TestWidgetsFlutterBinding.ensureInitialized();
+  String publishableKey = "KdoMYSdE4MFWHEjdOO32xGP2jpmeyV0A0BPtRXUEfUiZfhPm5IfA5jNmQWJZ7GfQBhUtE8SpdoRbtndPGyGofA";
+    HyperTrack? hyperTrack;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  setUp(() async {
+    if (hyperTrack == null)
+          hyperTrack = await HyperTrack().initialize(publishableKey);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  tearDown(() {});
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  group('Basic Smoke Test', () {
+
+    test('initialize', () async {
+      // hyperTrack = await ;
+      expect(await HyperTrack().initialize(publishableKey).runtimeType,
+          HyperTrack);
+    });
+    
+    test('is not running', () async {
+      expect(await hyperTrack?.isRunning(), false);
+    });
+
+    test('tracking', () async {
+      await hyperTrack?.start();
+      expect(await hyperTrack?.onTrackingStateChanged.first,
+          TrackingStateChange.start);
+    });
+
+    test('is running', () async {
+      expect(await hyperTrack?.isRunning(), true);
+    });
+
+    test('not tracking', () async {
+      await hyperTrack?.stop();
+      expect(await hyperTrack?.onTrackingStateChanged.first,
+          TrackingStateChange.stop);
+      expect(await hyperTrack?.isRunning(), false);
+    });
   });
 }

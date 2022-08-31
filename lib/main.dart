@@ -19,9 +19,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   HyperTrack _hypertrackFlutterPlugin = HyperTrack();
   final String _publishableKey =
-      "KdoMYSdE4MFWHEjdOO32xGP2jpmeyV0A0BPtRXUEfUiZfhPm5IfA5j"
-      "NmQWJZ7GfQBhUtE8SpdoRbtndPGyGofA";
-  final String _deviceName = 'RMv2';
+      "KdoMYSdE4MFWHEjdOO32xGP2jpmeyV0A0BPtRXUEfUiZfhPm5IfA5jNmQWJZ7GfQBhUtE8SpdoRbtndPGyGofA";
+  final String _deviceName = 'TestingNotif';
   String _result = 'Not initialized';
   bool isRunning = false;
 
@@ -82,13 +81,18 @@ class _MyAppState extends State<MyApp> {
                   ),
                   ElevatedButton(
                     onPressed: () async => _hypertrackFlutterPlugin
-                        .setAvailability(Availability.Available),
+                        .setAvailability(false),
                     child: const Text("set Availability"),
                   ),
                   ElevatedButton(
                     onPressed: () async =>
                         _hypertrackFlutterPlugin.getLatestLocation(),
                     child: const Text("get latest location"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async =>
+                        getError(),
+                    child: const Text("Errors"),
                   ),
                 ],
               ),
@@ -114,6 +118,10 @@ class _MyAppState extends State<MyApp> {
         setState(() {});
       }
     });
+  }
+
+  void getError() async {
+    print(await _hypertrackFlutterPlugin.subscribeToErrors());
   }
 
   void updateButtonState() async {
