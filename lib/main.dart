@@ -4,6 +4,8 @@ import 'package:hypertrack_plugin/hypertrack.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+void main() => runApp(HyperTrackQuickStart());
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
@@ -18,9 +20,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   HyperTrack _hypertrackFlutterPlugin = HyperTrack();
-  final String _publishableKey =
-      "Enter publishable key";
-  final String _deviceName = 'Enter device name';
+  final String _publishableKey = "<-- PLACE PUBLIC KEY HERE -->";
+  final String _deviceName = '<-- DEVICE NAME GOES HERE -->';
   String _result = 'Not initialized';
   bool isRunning = false;
 
@@ -55,15 +56,22 @@ class _MyAppState extends State<MyApp> {
                 alignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: isRunning ? Colors.red : Colors.green),
+                    style: ElevatedButton.styleFrom(primary: isRunning ? Colors.red : Colors.green),
                     onPressed: () {
                       isRunning
                           ? _hypertrackFlutterPlugin.stop()
                           : _hypertrackFlutterPlugin.start();
                       setState(() {});
                     },
-                    child: Text(isRunning ? "Stop Tracking" : "Start Tracking"),
+                    child:
+                    Text(isRunning ? "Stop Tracking" : "Start Tracking"),
+
+
+                  ),
+                  ElevatedButton(
+                    onPressed: () async =>
+                        _hypertrackFlutterPlugin.syncDeviceSettings(),
+                    child: const Text("Sync Settings"),
                   ),
                 ],
               ),
@@ -91,25 +99,14 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void getError() async {
-    print(await _hypertrackFlutterPlugin.subscribeToErrors());
-  }
-
   void updateButtonState() async {
     final temp = await _hypertrackFlutterPlugin.isRunning();
     isRunning = temp;
     setState(() {});
   }
-
-  subscribeToAvailability() async {
-    Stream _avail = await _hypertrackFlutterPlugin.subscribeToAvailability;
-    _avail.listen((event) {
-      print(event.toString() + "123");
-    });
-  }
 }
 
-String getTrackingStatus(TrackingStateChange event) {
+String getTrackingStatus (TrackingStateChange event) {
   Map<TrackingStateChange, String> statusMap = {
     TrackingStateChange.start: "Tracking Started",
     TrackingStateChange.stop: "Tracking Stop",

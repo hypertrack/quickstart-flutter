@@ -25,7 +25,10 @@ dependencies:
   cupertino_icons: ^0.1.2
 
   hypertrack_plugin:
-    path: ../sdk-flutter
+    git:
+      url: https://github.com/hypertrack/sdk-flutter.git #Place your Github repo here.
+      ref: master # specify branch name or commit hash here
+      
   firebase_core: ^1.19.1
   firebase_messaging: ^11.4.4
 
