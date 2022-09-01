@@ -4,8 +4,6 @@ import 'package:hypertrack_plugin/hypertrack.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-void main() => runApp(HyperTrackQuickStart());
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
@@ -65,13 +63,6 @@ class _MyAppState extends State<MyApp> {
                     },
                     child:
                     Text(isRunning ? "Stop Tracking" : "Start Tracking"),
-
-
-                  ),
-                  ElevatedButton(
-                    onPressed: () async =>
-                        _hypertrackFlutterPlugin.syncDeviceSettings(),
-                    child: const Text("Sync Settings"),
                   ),
                 ],
               ),
