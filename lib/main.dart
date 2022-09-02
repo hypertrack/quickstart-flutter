@@ -53,16 +53,30 @@ class _MyAppState extends State<MyApp> {
               ButtonBar(
                 alignment: MainAxisAlignment.center,
                 children: [
+                  Container(
+                    width: 300,
+                    child: TextField(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                      controller: TextEditingController(text: 'Device Id'),
+                    ),
+                  ),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: isRunning ? Colors.red : Colors.green),
+                      onPressed: () {
+                        deviceId();
+                      },
+                      child: Text('Device Id')),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        primary: isRunning ? Colors.red : Colors.green),
                     onPressed: () {
                       isRunning
                           ? _hypertrackFlutterPlugin.stop()
                           : _hypertrackFlutterPlugin.start();
                       setState(() {});
                     },
-                    child:
-                    Text(isRunning ? "Stop Tracking" : "Start Tracking"),
+                    child: Text(isRunning ? "Stop Tracking" : "Start Tracking"),
                   ),
                 ],
               ),
@@ -73,6 +87,10 @@ class _MyAppState extends State<MyApp> {
             trailing: Text(_result),
           )),
     );
+  }
+
+  deviceId() async {
+    print(await _hypertrackFlutterPlugin.getDeviceId());
   }
 
   void initHyperTrack() async {
@@ -97,7 +115,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-String getTrackingStatus (TrackingStateChange event) {
+String getTrackingStatus(TrackingStateChange event) {
   Map<TrackingStateChange, String> statusMap = {
     TrackingStateChange.start: "Tracking Started",
     TrackingStateChange.stop: "Tracking Stop",

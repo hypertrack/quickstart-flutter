@@ -29,6 +29,18 @@ Open the Quickstart project inside the workspace and set your Publishable Key (f
 1. [Set up Firebase for Flutter](https://firebase.google.com/docs/flutter/setup)
 2. [Set up Firebase for Hypertrack](https://hypertrack.com/docs/install-sdk-android)
 
+### Build and Run
+same on all platform 
+run the command flutter run and select the target device
+
+### update SDK wrapper version
+In pubspec.ymal change
+version: 
+
+### Initilize Hypertrack sdk
+
+HyperTrack sdk = await HyperTrack.initialize("your-publishable-key-here");
+
 ### Run the app
 
 Run the app on your phone. Grant location and activity permissions when prompted.
