@@ -7,7 +7,7 @@ import 'package:hypertrack_plugin/const/constants.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   String publishableKey =
-      "KdoMYSdE4MFWHEjdOO32xGP2jpmeyV0A0BPtRXUEfUiZfhPm5IfA5jNmQWJZ7GfQBhUtE8SpdoRbtndPGyGofA";
+      "<-- PUBLISHABLE KEY GOES HERE -->";
   HyperTrack? hyperTrack;
 
   setUp(() async {
@@ -23,12 +23,12 @@ void main() {
       expect(await hyperTrack.runtimeType, HyperTrack);
     });
 
-    // test('is not running', () async {
-    //   expect(await hyperTrack?.isRunning(), false);
-    // });
+    test('is not running', () async {
+    hyperTrack = await HyperTrack().initialize(publishableKey);
+      expect(await hyperTrack?.isRunning(), false);
+    });
 
     test('tracking', () async {
-      // await hyperTrack?.start();
       expect(await hyperTrack?.isTracking(), false);
     });
 
@@ -44,8 +44,8 @@ void main() {
           TrackingStateChange.stop);
       expect(await hyperTrack?.isRunning(), false);
     });
-    // test("get availability", () async {
-    //   expect(await hyperTrack?.getAvailability(), Availability.Available);
-    // });
+    test("get availability", () async {
+      expect(await hyperTrack?.getAvailability(), Availability.Unavailable);
+    });
   });
 }

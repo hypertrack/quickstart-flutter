@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hypertrack_plugin/const/constants.dart';
 import 'package:hypertrack_plugin/hypertrack.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,16 +19,18 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   HyperTrack _hypertrackFlutterPlugin = HyperTrack();
-  final String _publishableKey = "<-- PLACE PUBLIC KEY HERE -->";
+  final String _publishableKey = '<-- PUBLISHABLE KEY GOES HERE -->';
   final String _deviceName = '<-- DEVICE NAME GOES HERE -->';
   String _result = 'Not initialized';
   bool isRunning = false;
+  String id = '';
 
   @override
   void initState() {
     super.initState();
     Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     initHyperTrack();
+    deviceId();
   }
 
   @override
@@ -54,19 +57,30 @@ class _MyAppState extends State<MyApp> {
                 alignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 300,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      controller: TextEditingController(text: 'Device Id'),
+                    height: 60,
+                    width: 400,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            enabled: false,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                            ),
+                            controller: TextEditingController(text: id),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        ElevatedButton(onPressed: () async {
+                          ClipboardData data = ClipboardData(text: id);
+                          await Clipboard.setData(data);
+                          print(id);
+                        }, child: Text("Copy"),),
+                      ],
                     ),
                   ),
-                  ElevatedButton(
-                      onPressed: () {
-                        deviceId();
-                      },
-                      child: Text('Device Id')),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         primary: isRunning ? Colors.red : Colors.green),
@@ -90,7 +104,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   deviceId() async {
-    print(await _hypertrackFlutterPlugin.getDeviceId());
+    String deviceId = await _hypertrackFlutterPlugin.getDeviceId();
+    id = deviceId;
+    setState(() {});
   }
 
   void initHyperTrack() async {
