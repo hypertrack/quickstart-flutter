@@ -1,4 +1,4 @@
-name: quickstartflutter
+name: Quickstart Flutter
 description: Quickstart app for HyperTrack Flutter SDK
 
 # The following defines the version and build number for your application.
@@ -19,17 +19,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-
-  hypertrack_plugin:
-    git:
-      url: https://github.com/hypertrack/sdk-flutter.git #Place your Github repo here.
-      ref: master # specify branch name or commit hash here
-  firebase_core: ^1.19.1
-  firebase_messaging: ^11.4.4
+  hypertrack_plugin: 1.0.0
 
 dev_dependencies:
   flutter_test:
