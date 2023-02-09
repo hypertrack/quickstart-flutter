@@ -16,6 +16,7 @@ ios/build/*
 .flutter-plugins-dependencies
 build/
 doc/api/
+lib/firebase_options.dart
 
 # Firebase
 android/app/google-services.json
