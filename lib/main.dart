@@ -13,9 +13,11 @@ const String _publishableKey = '< Put your publishable_key here >';
 Future<void> main() async {
   DartPluginRegistrant.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
-  HyperTrack hyperTrack =
-      await HyperTrack.initialize(_publishableKey, loggingEnabled: true)
-          .onError((error, stackTrace) {
+  HyperTrack hyperTrack = await HyperTrack.initialize(
+    _publishableKey,
+    loggingEnabled: true,
+    automaticallyRequestPermissions: true,
+  ).onError((error, stackTrace) {
     throw Exception(error);
   });
   runApp(MyApp(hyperTrack));
@@ -220,8 +222,9 @@ class _MyAppState extends State<MyApp> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      final result = await _hypertrackSdk.addGeotag(_testGeotag,
-                          expectedLocation: Location(37.422, -122.084));
+                      final result =
+                          await _hypertrackSdk.addGeotagWithExpectedLocation(
+                              _testGeotag, Location(37.422, -122.084));
                       if (result is Success) {
                         _showSnackBarMessage(
                             builder, "Geotag added at $result");
