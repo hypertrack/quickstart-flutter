@@ -1,0 +1,49 @@
+#!/bin/sh
+
+check_error="Git hook check error"
+
+# Check if there are any local dependencies in the pubspec.yaml file
+local_deps=$(grep -E "path:.*" pubspec.yaml)
+
+# If local dependencies are found, exit with an error message
+if [ "$local_deps" ]; then
+  echo "$check_error: Local dependencies found in pubspec.yaml: \n\n $local_deps \n\n Push blocked to prevent committing local dependencies."
+  exit 1
+fi
+
+# Check if there are any Github dependencies in the pubspec.yaml file
+github_deps=$(grep -E "https://github.com" pubspec.yaml)
+
+# If github dependencies are found, exit with an error message
+if [ "$github_deps" ]; then
+  echo "$check_error: Github dependencies found in pubspec.yaml: \n\n $github_deps \n\n Push blocked to prevent committing Github dependencies."
+  exit 1
+fi
+
+# Check if publishable key is set in  main.dart
+# Get the length of the _publishableKey constant
+LENGTH=$(grep -o '_publishableKey = .*' lib/main.dart | cut -d'"' -f2 | wc -c | awk '{$1=$1-1}1')
+
+if [ $LENGTH -eq 86 ]; then
+  echo "$check_error: _publishableKey is set"
+  exit 1
+fi
+
+xcode_project_config_path="ios/Runner.xcodeproj/project.pbxproj"
+
+# Check if the xcodeproj command line tool is installed
+if ! type "xcodeproj" >/dev/null; then
+  echo "$check_error: The xcodeproj command line tool is not installed. Unable to check if the development team is set up."
+else
+  # Check if the project file exists
+  if [ ! -f $xcode_project_config_path ]; then
+    echo "$check_error: The project file '$xcode_project_config_path' does not exist."
+    exit 1
+  fi
+
+  # Check if the development team is set up
+  if cat $xcode_project_config_path | grep -q -E 'DEVELOPMENT_TEAM\s*=\s*[A-Z0-9]{10}'; then
+    echo "$check_error: iOS Development team is set up."
+    exit 1
+  fi
+fi

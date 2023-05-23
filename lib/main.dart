@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hypertrack_plugin/data_types/json.dart';
+import 'package:hypertrack_plugin/data_types/location.dart';
 import 'package:hypertrack_plugin/data_types/result.dart';
 import 'package:hypertrack_plugin/hypertrack.dart';
 
@@ -12,11 +13,13 @@ const String _publishableKey = '< Put your publishable_key here >';
 Future<void> main() async {
   DartPluginRegistrant.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
-  HyperTrack hyperTrack =
-      await HyperTrack.initialize(_publishableKey, loggingEnabled: true)
-          .onError((error, stackTrace) {
-            throw Exception(error);
-          });
+  HyperTrack hyperTrack = await HyperTrack.initialize(
+    _publishableKey,
+    loggingEnabled: true,
+    automaticallyRequestPermissions: true,
+  ).onError((error, stackTrace) {
+    throw Exception(error);
+  });
   runApp(MyApp(hyperTrack));
 }
 
@@ -216,6 +219,20 @@ class _MyAppState extends State<MyApp> {
                       }
                     },
                     child: Text("Add geotag"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final result =
+                          await _hypertrackSdk.addGeotagWithExpectedLocation(
+                              _testGeotag, Location(37.422, -122.084));
+                      if (result is Success) {
+                        _showSnackBarMessage(
+                            builder, "Geotag added at $result");
+                      } else {
+                        _showSnackBarMessage(builder, "Geotag error: $result");
+                      }
+                    },
+                    child: Text("Add geotag with expected location"),
                   ),
                   ElevatedButton(
                     onPressed: () {

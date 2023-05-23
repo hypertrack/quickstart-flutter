@@ -1,4 +1,4 @@
-name: Quickstart Flutter
+name: QuickstartFlutter
 description: Quickstart app for HyperTrack Flutter SDK
 
 # The following defines the version and build number for your application.
@@ -20,19 +20,17 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^0.1.2
-  hypertrack_plugin: 1.0.0
+  hypertrack_plugin: 1.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
