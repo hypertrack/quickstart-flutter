@@ -1,5 +1,7 @@
-import 'dart:math';
+import 'dart:async';
+import 'dart:math' as Math;
 import 'dart:ui';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,48 +10,37 @@ import 'package:hypertrack_plugin/data_types/location.dart';
 import 'package:hypertrack_plugin/data_types/result.dart';
 import 'package:hypertrack_plugin/hypertrack.dart';
 
-const String _publishableKey = '< Put your publishable_key here >';
-
 Future<void> main() async {
   DartPluginRegistrant.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
-  HyperTrack hyperTrack = await HyperTrack.initialize(
-    _publishableKey,
-    loggingEnabled: true,
-    automaticallyRequestPermissions: true,
-  ).onError((error, stackTrace) {
-    throw Exception(error);
-  });
-  runApp(MyApp(hyperTrack));
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  final HyperTrack hyperTrack;
-
-  const MyApp(HyperTrack this.hyperTrack, {Key? key}) : super(key: key);
-
   @override
-  State<MyApp> createState() => _MyAppState(this.hyperTrack);
+  State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  HyperTrack _hypertrackSdk;
-
-  _MyAppState(this._hypertrackSdk);
-
-  String _trackingStateText = 'Not initialized';
-  String _trackingErrorText = '';
-  String _isAvailableText = 'Not initialized';
+  String _errorsText = '';
+  String _isAvailableText = '';
+  String _isTrackingStateText = '';
+  String _locationText = '';
   String _deviceId = '';
+
+  StreamSubscription? locateSubscription;
 
   @override
   void initState() {
     super.initState();
-    initHyperTrack();
-    updateDeviceId();
 
-    _hypertrackSdk.setName(_deviceName);
-    _hypertrackSdk.setMetadata(_testMetadata);
+    HyperTrack.setName(_deviceName);
+    HyperTrack.setMetadata(_testMetadata);
+    HyperTrack.deviceId.then((deviceId) => _deviceId = deviceId);
+    HyperTrack.metadata.then((metadata) => log(metadata.toString()));
+    HyperTrack.name.then((name) => log(name));
+
+    _initSubscriptions();
   }
 
   @override
@@ -60,213 +51,258 @@ class _MyAppState extends State<MyApp> {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('HyperTrack Quickstart'),
+          title: const Text('HyperTrack Quickstart Flutter'),
           centerTitle: true,
         ),
         body: Builder(
-          builder: (builder) => ListView(
-            children: [
-              SizedBox(height: 10),
-              ListTile(
-                leading: const Text("Device name"),
-                trailing: Container(
-                  width: 180,
-                  child: Text(
-                    _deviceName,
-                  ),
-                ),
-              ),
-              Container(
-                height: 65,
-                width: 400,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: TextField(
-                        enabled: false,
-                        style: TextStyle(fontSize: 13),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                        ),
-                        controller: TextEditingController(text: _deviceId),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        ClipboardData data = ClipboardData(text: _deviceId);
-                        await Clipboard.setData(data);
-                        print(_deviceId);
-                        _showSnackBarMessage(
-                            builder, "Device ID copied to clipboard");
-                      },
-                      child: Text("Copy"),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
+          builder: (builder) => Container(
+            child: SingleChildScrollView(
+                child: Container(
+              padding: EdgeInsets.all(16),
+              child: Column(
                 children: [
-                  Container(
-                    height: 50,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text("isTracking state"),
-                    ),
+                  SizedBox(height: 10),
+                  _deviceIdView(builder),
+                  _errorsView(),
+                  _locationSubscriptionView(),
+                  _isTrackingView(),
+                  _isAvailableView(),
+                  _addGeotagView(builder),
+                  ElevatedButton(
+                    onPressed: () async {
+                      locateSubscription?.cancel();
+                      locateSubscription =
+                          await HyperTrack.locate().listen((event) {
+                        _showSnackBarMessage(builder, event.toString());
+                        locateSubscription?.cancel();
+                      });
+                    },
+                    child: Text("Locate"),
                   ),
-                  Flexible(child: Text(_trackingStateText))
+                  _gettersView(builder)
                 ],
               ),
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    height: 50,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text("isAvailable state"),
-                    ),
-                  ),
-                  Flexible(child: Text(_isAvailableText.toString()))
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                    height: 50,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: const Text("Errors"),
-                    ),
-                  ),
-                  Flexible(
-                    child: Text(
-                      _trackingErrorText,
-                    ),
-                  )
-                ],
-              ),
-              ButtonBar(
-                alignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      _hypertrackSdk.startTracking();
-                    },
-                    child: Text("Start Tracking"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _hypertrackSdk.stopTracking();
-                    },
-                    child: Text("Stop Tracking"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _hypertrackSdk.setAvailability(true);
-                    },
-                    child: Text("Set Available"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _hypertrackSdk.setAvailability(false);
-                    },
-                    child: Text("Set Unavailable"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      bool isAvailable = await _hypertrackSdk.isAvailable;
-                      _showSnackBarMessage(
-                          builder, "isAvailable: $isAvailable");
-                    },
-                    child: Text("isAvailable"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      bool isTracking = await _hypertrackSdk.isTracking;
-                      _showSnackBarMessage(builder, "isTracking: $isTracking");
-                    },
-                    child: Text("isTracking"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final result = await _hypertrackSdk.location;
-                      _showSnackBarMessage(builder, result.toString());
-                    },
-                    child: Text("Get location"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final result =
-                          await _hypertrackSdk.addGeotag(_testGeotag);
-                      if (result is Success) {
-                        _showSnackBarMessage(
-                            builder, "Geotag added at $result");
-                      } else {
-                        _showSnackBarMessage(builder, "Geotag error: $result");
-                      }
-                    },
-                    child: Text("Add geotag"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      final result =
-                          await _hypertrackSdk.addGeotagWithExpectedLocation(
-                              _testGeotag, Location(37.422, -122.084));
-                      if (result is Success) {
-                        _showSnackBarMessage(
-                            builder, "Geotag added at $result");
-                      } else {
-                        _showSnackBarMessage(builder, "Geotag error: $result");
-                      }
-                    },
-                    child: Text("Add geotag with expected location"),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _hypertrackSdk.sync();
-                      _showSnackBarMessage(builder, "Sync");
-                    },
-                    child: Text("Sync"),
-                  ),
-                ],
-              ),
-            ],
+            )),
           ),
         ),
       ),
     );
   }
 
-  void initHyperTrack() {
-    _hypertrackSdk.onTrackingChanged.listen((bool isTracking) {
+  Widget _deviceIdView(builder) {
+    return Container(
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              enabled: false,
+              style: TextStyle(fontSize: 13),
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+              controller: TextEditingController(text: _deviceId),
+            ),
+          ),
+          SizedBox(
+            width: 10,
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              ClipboardData data = ClipboardData(text: _deviceId);
+              await Clipboard.setData(data);
+              print(_deviceId);
+              _showSnackBarMessage(builder, "Device ID copied to clipboard");
+            },
+            child: Text("Copy"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _addGeotagView(builder) {
+    return ButtonBar(
+      alignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        ElevatedButton(
+          onPressed: () async {
+            final result = await HyperTrack.addGeotag(_testGeotag);
+            if (result is Success) {
+              _showSnackBarMessage(builder, "Geotag added at $result");
+            } else {
+              _showSnackBarMessage(builder, "Geotag error: $result");
+            }
+          },
+          child: Text("Add geotag"),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            final result = await HyperTrack.addGeotagWithExpectedLocation(
+                _testGeotag, Location(37.422, -122.084));
+            if (result is Success) {
+              _showSnackBarMessage(builder, "Geotag added at $result");
+            } else {
+              _showSnackBarMessage(builder, "Geotag error: $result");
+            }
+          },
+          child: Text("Add geotag with expected location"),
+        ),
+      ],
+    );
+  }
+
+  Widget _errorsView() {
+    return Row(
+      children: [
+        Container(
+          height: 50,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: const Text("Errors:"),
+          ),
+        ),
+        Flexible(
+          child: Text(
+            _errorsText,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _gettersView(builder) {
+    return ButtonBar(
+      alignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        ElevatedButton(
+          onPressed: () async {
+            bool isAvailable = await HyperTrack.isAvailable;
+            _showSnackBarMessage(builder, "isAvailable: $isAvailable");
+          },
+          child: Text("isAvailable"),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            bool isTracking = await HyperTrack.isTracking;
+            _showSnackBarMessage(builder, "isTracking: $isTracking");
+          },
+          child: Text("isTracking"),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            final result = await HyperTrack.location;
+            _showSnackBarMessage(builder, result.toString());
+          },
+          child: Text("Get location"),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            final result = await HyperTrack.metadata;
+            _showSnackBarMessage(builder, result.toString());
+          },
+          child: Text("Get metadata"),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            final result = await HyperTrack.name;
+            _showSnackBarMessage(builder, result.toString());
+          },
+          child: Text("Get name"),
+        ),
+      ],
+    );
+  }
+
+  Widget _isTrackingView() {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        _button("Start tracking", () => HyperTrack.setIsTracking(true)),
+        Expanded(
+          child: Column(
+            children: [
+              Text(
+                "isTracking",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(_isTrackingStateText)
+            ],
+          ),
+        ),
+        _button("Stop tracking", () => HyperTrack.setIsTracking(false)),
+      ],
+    );
+  }
+
+  Widget _isAvailableView() {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        _button("Set available", () => HyperTrack.setIsAvailable(true)),
+        Expanded(
+          child: Column(
+            children: [
+              Text(
+                "isAvailable",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(_isAvailableText)
+            ],
+          ),
+        ),
+        _button("Set unavailable", () => HyperTrack.setIsAvailable(false)),
+      ],
+    );
+  }
+
+  Widget _locationSubscriptionView() {
+    return Row(
+      children: [
+        Container(
+          height: 50,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: const Text("Location:"),
+          ),
+        ),
+        Flexible(
+          child: Text(
+            _locationText,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _button(String text, Function() onPressed) {
+    return Container(
+      width: 110,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        child: Text(text, textAlign: TextAlign.center),
+      ),
+    );
+  }
+
+  void _initSubscriptions() {
+    HyperTrack.isTrackingSubscription.listen((bool isTracking) {
       if (mounted) {
-        _trackingStateText = "Tracking: $isTracking";
-        _trackingErrorText = "";
+        _isTrackingStateText = "$isTracking";
         setState(() {});
       }
     }).onError((error) {
       if (mounted) {
-        _trackingStateText = error.toString();
+        _isTrackingStateText = error.toString();
         setState(() {});
       }
     });
-    _hypertrackSdk.onAvailabilityChanged.listen((bool isAvailable) {
+    HyperTrack.isAvailableSubscription.listen((bool isAvailable) {
       if (mounted) {
-        _isAvailableText = "Available: ${isAvailable}";
-        _trackingErrorText = "";
+        _isAvailableText = "${isAvailable}";
         setState(() {});
       }
     }).onError((error) {
@@ -275,23 +311,34 @@ class _MyAppState extends State<MyApp> {
         setState(() {});
       }
     });
-    _hypertrackSdk.onError.listen((errors) {
+    HyperTrack.errorsSubscription.listen((errors) {
       if (mounted) {
-        _trackingErrorText =
-            errors.map((e) => {e.toString().split('.').last}).join("\n");
+        if (errors.length == 0) {
+          _errorsText = 'No errors';
+        } else {
+          _errorsText =
+              errors.map((e) => {e.toString().split('.').last}).join("\n");
+        }
         setState(() {});
       }
     }).onError((error) {
       if (mounted) {
-        _trackingErrorText = error.toString();
+        _errorsText = error.toString();
         setState(() {});
       }
     });
-  }
 
-  void updateDeviceId() async {
-    _deviceId = await _hypertrackSdk.deviceId;
-    setState(() {});
+    HyperTrack.locationSubscription.listen((location) {
+      if (mounted) {
+        _locationText = location.toString();
+        setState(() {});
+      }
+    }).onError((error) {
+      if (mounted) {
+        _locationText = error.toString();
+        setState(() {});
+      }
+    });
   }
 
   void _showSnackBarMessage(BuildContext context, String message) {
@@ -312,7 +359,7 @@ class _MyAppState extends State<MyApp> {
 const String _deviceName = 'Flutter Quickstart';
 final JSONObject _testMetadata = JSONObject({
   "source": JSONString("Flutter"),
-  "metadata": JSONObject({"value": JSONNumber(Random().nextDouble())})
+  "data": JSONObject({"key": JSONNumber(Math.Random().nextDouble())})
 });
 final JSONObject _testGeotag = JSONObject({
   "source": JSONString("Flutter"),

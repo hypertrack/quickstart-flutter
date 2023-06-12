@@ -24,6 +24,8 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>HyperTrackPublishableKey</key>
+	<string>uvIAA8xJANxUxDgINOX62-LINLuLeymS6JbGieJ9PegAPITcr9fgUpROpfSMdL9kv-qFjl17NeAuBHse8Qu9sw</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSBonjourServices</key>
@@ -38,6 +40,8 @@
 	<string>&lt;YOUR APP&gt; needs to access this device's location for &lt;REASON&gt;</string>
 	<key>NSMotionUsageDescription</key>
 	<string>&lt;YOUR APP&gt; needs to access this device's motion updates for &lt;REASON&gt;</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
@@ -62,7 +66,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
 </dict>
 </plist>
