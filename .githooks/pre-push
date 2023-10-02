@@ -8,7 +8,7 @@ local_deps=$(grep -E "path:.*" pubspec.yaml)
 # If local dependencies are found, exit with an error message
 if [ "$local_deps" ]; then
   echo "$check_error: Local dependencies found in pubspec.yaml: \n\n $local_deps \n\n Push blocked to prevent committing local dependencies."
-#  exit 1
+  exit 1
 fi
 
 # Check if there are any Github dependencies in the pubspec.yaml file
@@ -22,12 +22,12 @@ fi
 
 if ! grep -q "value=\"Paste_your_publishable_key_here" "android/app/src/main/AndroidManifest.xml"; then
   echo "$check_error: PUBLISHABLE_KEY is probably set ('Paste_your_publishable_key_here' not found in AndroidManifest)"
-#  exit 1
+  exit 1
 fi
 
-if ! grep -q "<string>Paste_your_publishable_key_here" "ios/QuickstartReactNative/Info.plist"; then
+if ! grep -q "<string>Paste_your_publishable_key_here" "ios/Runner/Info.plist"; then
   echo "$check_error: PUBLISHABLE_KEY is probably set ('Paste_your_publishable_key_here' not found in Info.plist)"
-#  exit 1
+  exit 1
 fi
 
 xcode_project_config_path="ios/Runner.xcodeproj/project.pbxproj"
