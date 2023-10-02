@@ -20,12 +20,13 @@ if [ "$github_deps" ]; then
   exit 1
 fi
 
-# Check if publishable key is set in  main.dart
-# Get the length of the _publishableKey constant
-LENGTH=$(grep -o '_publishableKey = .*' lib/main.dart | cut -d'"' -f2 | wc -c | awk '{$1=$1-1}1')
+if ! grep -q "value=\"Paste_your_publishable_key_here" "android/app/src/main/AndroidManifest.xml"; then
+  echo "$check_error: PUBLISHABLE_KEY is probably set ('Paste_your_publishable_key_here' not found in AndroidManifest)"
+  exit 1
+fi
 
-if [ $LENGTH -eq 86 ]; then
-  echo "$check_error: _publishableKey is set"
+if ! grep -q "<string>Paste_your_publishable_key_here" "ios/Runner/Info.plist"; then
+  echo "$check_error: PUBLISHABLE_KEY is probably set ('Paste_your_publishable_key_here' not found in Info.plist)"
   exit 1
 fi
 
