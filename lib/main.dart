@@ -192,6 +192,13 @@ class _MyAppState extends State<MyApp> {
         ),
         ElevatedButton(
           onPressed: () async {
+            final result = await HyperTrack.errors;
+            _showSnackBarMessage(builder, result.toString());
+          },
+          child: Text("Get errors"),
+        ),
+        ElevatedButton(
+          onPressed: () async {
             final result = await HyperTrack.location;
             _showSnackBarMessage(builder, result.toString());
           },
