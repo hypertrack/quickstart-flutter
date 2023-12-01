@@ -19,8 +19,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^0.1.2
   hypertrack_plugin: 2.0.3
+  firebase_core: ^2.24.0
+  firebase_messaging: ^14.7.6
 
 dev_dependencies:
   flutter_test:

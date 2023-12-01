@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1088073221474-7limpqlijbr2ggldbcoikshserkdjk4a.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAbIc641cTiLyDqCPIYzHzjsbb2OHL-rrY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1088073221474</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.hypertrack.quickstart.flutter.ios</string>
+	<key>PROJECT_ID</key>
+	<string>my-project-1544593122512</string>
+	<key>STORAGE_BUCKET</key>
+	<string>my-project-1544593122512.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1088073221474:ios:cf8c52be7b29231d80183b</string>
+	<key>DATABASE_URL</key>
+	<string>https://my-project-1544593122512.firebaseio.com</string>
+</dict>
+</plist>

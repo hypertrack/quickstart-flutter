@@ -3,6 +3,8 @@ import 'dart:math' as Math;
 import 'dart:ui';
 import 'dart:developer';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hypertrack_plugin/data_types/json.dart';
@@ -10,10 +12,41 @@ import 'package:hypertrack_plugin/data_types/location.dart';
 import 'package:hypertrack_plugin/data_types/result.dart';
 import 'package:hypertrack_plugin/hypertrack.dart';
 
+import 'firebase_options.dart';
+
 Future<void> main() async {
   DartPluginRegistrant.ensureInitialized();
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  final notificationSettings =
+      await FirebaseMessaging.instance.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+  print("kek ${notificationSettings.authorizationStatus}");
+  final apnsToken = await FirebaseMessaging.instance.getAPNSToken();
+  print("kek $apnsToken");
+  final fcmToken = await FirebaseMessaging.instance.getToken();
+  print("kek $fcmToken");
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print("kek onMessage: $message");
+  });
+  final email = "test@mail.com";
+  HyperTrack.setMetadata(JSONObject({"driver_handle": JSONString(email)}));
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("kek onBackgroundMessage: $message");
 }
 
 class MyApp extends StatefulWidget {
@@ -110,7 +143,6 @@ class _MyAppState extends State<MyApp> {
             onPressed: () async {
               ClipboardData data = ClipboardData(text: _deviceId);
               await Clipboard.setData(data);
-              print(_deviceId);
               _showSnackBarMessage(builder, "Device ID copied to clipboard");
             },
             child: Text("Copy"),
