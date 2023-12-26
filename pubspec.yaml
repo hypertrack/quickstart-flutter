@@ -19,8 +19,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^0.1.2
-  hypertrack_plugin: 2.0.3
+  cupertino_icons: 1.0.6
+  hypertrack_plugin: 2.0.4
 
 dev_dependencies:
   flutter_test:

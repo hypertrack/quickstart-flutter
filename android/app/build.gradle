@@ -29,7 +29,7 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 34
     ndkVersion "21.1.6352462"
 
     sourceSets {
@@ -42,8 +42,8 @@ android {
 
     defaultConfig {
         applicationId "com.hypertrack.quickstart.flutter.android"
-        minSdkVersion 23
-        targetSdkVersion 30
+        minSdkVersion 19
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
