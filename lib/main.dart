@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math' as Math;
 import 'dart:ui';
+import 'dart:io' show Platform;
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -34,8 +35,27 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    HyperTrack.setName(_deviceName);
-    HyperTrack.setMetadata(_testMetadata);
+    final String name = "Quickstart Flutter";
+    HyperTrack.setName(name);
+
+    final String platformName = Platform.isAndroid ? "android" : "ios";
+    final JSONObject metadata = JSONObject({
+      /**
+       * `driver_handle` is used to link the device and the driver.
+       * You can use any unique user identifier here.
+       * The recommended way is to set it on app login in set it to null on logout
+       * (to remove the link between the device and the driver)
+       **/
+      "driver_handle":
+      JSONString("test_driver_quickstart_flutter_${platformName}"),
+      /**
+       * You can also add any custom data to the metadata.
+       */
+      "source": JSONString(name),
+      "employee_id": JSONNumber(Math.Random().nextInt(10000).toDouble()),
+    });
+    HyperTrack.setMetadata(metadata);
+
     HyperTrack.deviceId.then((deviceId) => _deviceId = deviceId);
     HyperTrack.metadata.then((metadata) => log(metadata.toString()));
     HyperTrack.name.then((name) => log(name));
@@ -55,35 +75,36 @@ class _MyAppState extends State<MyApp> {
           centerTitle: true,
         ),
         body: Builder(
-          builder: (builder) => Container(
-            child: SingleChildScrollView(
-                child: Container(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  SizedBox(height: 10),
-                  _deviceIdView(builder),
-                  _errorsView(),
-                  _locationSubscriptionView(),
-                  _isTrackingView(),
-                  _isAvailableView(),
-                  _addGeotagView(builder),
-                  ElevatedButton(
-                    onPressed: () async {
-                      locateSubscription?.cancel();
-                      locateSubscription =
-                          await HyperTrack.locate().listen((event) {
-                        _showSnackBarMessage(builder, event.toString());
-                        locateSubscription?.cancel();
-                      });
-                    },
-                    child: Text("Locate"),
-                  ),
-                  _gettersView(builder)
-                ],
+          builder: (builder) =>
+              Container(
+                child: SingleChildScrollView(
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          SizedBox(height: 10),
+                          _deviceIdView(builder),
+                          _errorsView(),
+                          _locationSubscriptionView(),
+                          _isTrackingView(),
+                          _isAvailableView(),
+                          _addGeotagView(builder),
+                          ElevatedButton(
+                            onPressed: () async {
+                              locateSubscription?.cancel();
+                              locateSubscription =
+                              await HyperTrack.locate().listen((event) {
+                                _showSnackBarMessage(builder, event.toString());
+                                locateSubscription?.cancel();
+                              });
+                            },
+                            child: Text("Locate"),
+                          ),
+                          _gettersView(builder)
+                        ],
+                      ),
+                    )),
               ),
-            )),
-          ),
         ),
       ),
     );
@@ -189,6 +210,13 @@ class _MyAppState extends State<MyApp> {
             _showSnackBarMessage(builder, "isTracking: $isTracking");
           },
           child: Text("isTracking"),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            final result = await HyperTrack.errors;
+            _showSnackBarMessage(builder, result.toString());
+          },
+          child: Text("Get errors"),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -317,7 +345,11 @@ class _MyAppState extends State<MyApp> {
           _errorsText = 'No errors';
         } else {
           _errorsText =
-              errors.map((e) => {e.toString().split('.').last}).join("\n");
+              errors.map((e) =>
+              {e
+                  .toString()
+                  .split('.')
+                  .last}).join("\n");
         }
         setState(() {});
       }
@@ -349,18 +381,13 @@ class _MyAppState extends State<MyApp> {
             children: [message]
                 .map<TextSpan>(
                   (String message) => TextSpan(text: message),
-                )
+            )
                 .toList(),
           ),
         )));
   }
 }
 
-const String _deviceName = 'Flutter Quickstart';
-final JSONObject _testMetadata = JSONObject({
-  "source": JSONString("Flutter"),
-  "data": JSONObject({"key": JSONNumber(Math.Random().nextDouble())})
-});
 final JSONObject _testGeotag = JSONObject({
   "source": JSONString("Flutter"),
   "payload": JSONObject({"test_payload": JSONNumber(1)})
