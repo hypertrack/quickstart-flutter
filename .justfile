@@ -1,24 +1,26 @@
-alias al := use-local-dependency
-alias g := get-dependencies
-alias a := use-dependency
-alias ag := use-github-dependency
-alias ra := run-android
+alias a := add-plugin
+alias ag := add-plugin-github
+alias al := add-plugin-local
+alias ap := add-plugin
+alias c := clean
 alias oi := open-ios
+alias ra := run-android
+alias s := setup
 
-run-android: hooks
-    flutter run
+add-plugin version: hooks
+    flutter pub add hypertrack_plugin:{{version}}
+
+add-plugin-local: hooks
+    flutter pub add hypertrack_plugin --path ../sdk-flutter
+
+add-plugin-github branch: hooks
+    flutter pub add hypertrack_plugin --git-url=https://github.com/hypertrack/sdk-flutter --git-ref={{branch}}
+
+clean: hooks
+    flutter clean
 
 get-dependencies: hooks
     flutter pub get
-
-use-local-dependency: hooks
-    flutter pub add hypertrack_plugin --path ../sdk-flutter
-
-use-dependency version: hooks
-    flutter pub add hypertrack_plugin:{{version}}
-
-use-github-dependency branch: hooks
-    flutter pub add hypertrack_plugin --git-url=https://github.com/hypertrack/sdk-flutter --git-ref={{branch}}
 
 hooks:
     chmod +x .githooks/pre-push
@@ -26,3 +28,8 @@ hooks:
 
 open-ios:
     open ios/Runner.xcworkspace
+
+run-android: hooks
+    flutter run
+
+setup: get-dependencies hooks
