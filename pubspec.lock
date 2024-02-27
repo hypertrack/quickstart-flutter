@@ -71,10 +71,10 @@ packages:
     dependency: "direct main"
     description:
       name: hypertrack_plugin
-      sha256: cc4650e73be8e3e95ca9b92e5a233af78ba318b030ec7a6dcc6cd37306d1b804
+      sha256: ab8e25895da1484e2fd6bf2736b5f972cb30940b90d0d0130f58ad5a5ac59f5d
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   matcher:
     dependency: transitive
     description:
