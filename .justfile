@@ -24,7 +24,7 @@ add-plugin-local: hooks
     flutter pub add hypertrack_plugin --path ../{{SDK_REPOSITORY_NAME}}
 
 add-plugin-github branch: hooks
-    flutter pub add hypertrack_plugin --git-url=https://github.com/hypertrack/{{QUICKSTART_REPOSITORY_NAME}} --git-ref={{branch}}
+    flutter pub add hypertrack_plugin --git-url=https://github.com/hypertrack/{{SDK_REPOSITORY_NAME}} --git-ref={{branch}}
 
 clean: hooks
     flutter clean
