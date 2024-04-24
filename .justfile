@@ -19,12 +19,24 @@ SEMVER_REGEX := "(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d
 
 add-plugin version: hooks
     flutter pub add hypertrack_plugin:{{version}}
+    cd ios
+    rm Podfile.lock
+    pod install
+    cd ..
 
 add-plugin-local: hooks
     flutter pub add hypertrack_plugin --path ../{{SDK_REPOSITORY_NAME}}
+    cd ios
+    rm Podfile.lock
+    pod install
+    cd ..
 
 add-plugin-github branch: hooks
     flutter pub add hypertrack_plugin --git-url=https://github.com/hypertrack/{{SDK_REPOSITORY_NAME}} --git-ref={{branch}}
+    cd ios
+    rm Podfile.lock
+    pod install
+    cd ..
 
 clean: hooks
     flutter clean
