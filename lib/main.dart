@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hypertrack_plugin/data_types/json.dart';
 import 'package:hypertrack_plugin/data_types/location.dart';
+import 'package:hypertrack_plugin/data_types/order_status.dart';
 import 'package:hypertrack_plugin/data_types/result.dart';
 import 'package:hypertrack_plugin/hypertrack.dart';
 
@@ -47,7 +48,7 @@ class _MyAppState extends State<MyApp> {
        * (to remove the link between the device and the driver)
        **/
       "driver_handle":
-      JSONString("test_driver_quickstart_flutter_${platformName}"),
+          JSONString("test_driver_quickstart_flutter_${platformName}"),
       /**
        * You can also add any custom data to the metadata.
        */
@@ -75,36 +76,35 @@ class _MyAppState extends State<MyApp> {
           centerTitle: true,
         ),
         body: Builder(
-          builder: (builder) =>
-              Container(
-                child: SingleChildScrollView(
-                    child: Container(
-                      padding: EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          SizedBox(height: 10),
-                          _deviceIdView(builder),
-                          _errorsView(),
-                          _locationSubscriptionView(),
-                          _isTrackingView(),
-                          _isAvailableView(),
-                          _addGeotagView(builder),
-                          ElevatedButton(
-                            onPressed: () async {
-                              locateSubscription?.cancel();
-                              locateSubscription =
-                              await HyperTrack.locate().listen((event) {
-                                _showSnackBarMessage(builder, event.toString());
-                                locateSubscription?.cancel();
-                              });
-                            },
-                            child: Text("Locate"),
-                          ),
-                          _gettersView(builder)
-                        ],
-                      ),
-                    )),
+          builder: (builder) => Container(
+            child: SingleChildScrollView(
+                child: Container(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  _deviceIdView(builder),
+                  _errorsView(),
+                  _locationSubscriptionView(),
+                  _isTrackingView(),
+                  _isAvailableView(),
+                  _addGeotagView(builder),
+                  ElevatedButton(
+                    onPressed: () async {
+                      locateSubscription?.cancel();
+                      locateSubscription =
+                          await HyperTrack.locate().listen((event) {
+                        _showSnackBarMessage(builder, event.toString());
+                        locateSubscription?.cancel();
+                      });
+                    },
+                    child: Text("Locate"),
+                  ),
+                  _gettersView(builder)
+                ],
               ),
+            )),
+          ),
         ),
       ),
     );
@@ -148,7 +148,8 @@ class _MyAppState extends State<MyApp> {
       children: [
         ElevatedButton(
           onPressed: () async {
-            final result = await HyperTrack.addGeotag(_testGeotag);
+            final result = await HyperTrack.addGeotag(
+                _testOrderHandle, _testOrderStatus, _testGeotag);
             if (result is Success) {
               _showSnackBarMessage(builder, "Geotag added at $result");
             } else {
@@ -160,7 +161,10 @@ class _MyAppState extends State<MyApp> {
         ElevatedButton(
           onPressed: () async {
             final result = await HyperTrack.addGeotagWithExpectedLocation(
-                _testGeotag, Location(37.422, -122.084));
+                _testOrderHandle,
+                _testOrderStatus,
+                _testGeotag,
+                Location(37.422, -122.084));
             if (result is Success) {
               _showSnackBarMessage(builder, "Geotag added at $result");
             } else {
@@ -345,11 +349,7 @@ class _MyAppState extends State<MyApp> {
           _errorsText = 'No errors';
         } else {
           _errorsText =
-              errors.map((e) =>
-              {e
-                  .toString()
-                  .split('.')
-                  .last}).join("\n");
+              errors.map((e) => {e.toString().split('.').last}).join("\n");
         }
         setState(() {});
       }
@@ -381,7 +381,7 @@ class _MyAppState extends State<MyApp> {
             children: [message]
                 .map<TextSpan>(
                   (String message) => TextSpan(text: message),
-            )
+                )
                 .toList(),
           ),
         )));
@@ -392,3 +392,5 @@ final JSONObject _testGeotag = JSONObject({
   "source": JSONString("Flutter"),
   "payload": JSONObject({"test_payload": JSONNumber(1)})
 });
+final _testOrderHandle = "test_order";
+final _testOrderStatus = OrderStatus.custom("test_status");
