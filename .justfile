@@ -5,6 +5,7 @@ alias ap := add-plugin
 alias c := clean
 alias ogp := open-github-prs
 alias oi := open-ios
+alias pi := pod-install
 alias ra := run-android
 alias s := setup
 alias us := update-sdk
@@ -19,24 +20,15 @@ SEMVER_REGEX := "(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d
 
 add-plugin version: hooks
     flutter pub add hypertrack_plugin:{{version}}
-    cd ios
-    rm Podfile.lock
-    pod install
-    cd ..
+    just pod-install
 
 add-plugin-local: hooks
     flutter pub add hypertrack_plugin --path ../{{SDK_REPOSITORY_NAME}}
-    cd ios
-    rm Podfile.lock
-    pod install
-    cd ..
+    just pod-install
 
 add-plugin-github branch: hooks
     flutter pub add hypertrack_plugin --git-url=https://github.com/hypertrack/{{SDK_REPOSITORY_NAME}} --git-ref={{branch}}
-    cd ios
-    rm Podfile.lock
-    pod install
-    cd ..
+    just pod-install
 
 clean: hooks
     flutter clean
@@ -53,6 +45,13 @@ open-github-prs:
 
 open-ios:
     open ios/Runner.xcworkspace
+
+pod-install: hooks
+    #!/usr/bin/env sh
+    cd ios
+    rm -f Podfile.lock
+    pod install --repo-update
+    cd ..
 
 run-android: hooks
     flutter run
