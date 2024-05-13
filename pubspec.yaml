@@ -20,7 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: 1.0.6
-  hypertrack_plugin: 2.2.0
+  hypertrack_plugin: 2.2.1
 
 dev_dependencies:
   flutter_test:
