@@ -9,6 +9,8 @@ alias pi := pod-install
 alias ra := run-android
 alias s := setup
 alias us := update-sdk
+alias v := version
+alias va := version-android
 
 SDK_NAME := "HyperTrack SDK Flutter"
 SDK_REPOSITORY_NAME := "sdk-flutter"
@@ -63,3 +65,14 @@ update-sdk version: hooks
     just add-plugin {{version}}
     git commit -am "Update {{SDK_NAME}} to {{version}}"
     just open-github-prs
+
+version:
+    #!/usr/bin/env sh
+    echo "Not implemented"
+
+version-android:
+    #!/usr/bin/env sh
+    set -euo pipefail
+    cd android
+    ./gradlew app:dependencies | grep "com.hypertrack:sdk-android" | head -n 1 | grep -o -E '{{SEMVER_REGEX}}'
+    cd ..

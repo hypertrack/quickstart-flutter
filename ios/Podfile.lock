@@ -1,7 +1,7 @@
 PODS:
   - Flutter (1.0.0)
   - HyperTrack (5.5.4)
-  - hypertrack_plugin (2.2.2):
+  - hypertrack_plugin (2.2.3):
     - Flutter
     - HyperTrack (= 5.5.4)
 
@@ -22,7 +22,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   HyperTrack: cb0dea255b6d8a98e0b6966027447f3f0a6a11e9
-  hypertrack_plugin: f0016261b18e99a57e232bf342c803fc191738ee
+  hypertrack_plugin: 743956ef0a8c7130c5684ca24fb9a41fd5ba3dd0
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 
