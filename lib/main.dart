@@ -29,6 +29,7 @@ class _MyAppState extends State<MyApp> {
   String _isTrackingStateText = '';
   String _locationText = '';
   String _deviceId = '';
+  String _workerHandle = '';
 
   StreamSubscription? locateSubscription;
 
@@ -40,17 +41,18 @@ class _MyAppState extends State<MyApp> {
     HyperTrack.setName(name);
 
     final String platformName = Platform.isAndroid ? "android" : "ios";
+    /**
+     * `worker_handle` is used to link the device and the worker.
+     * You can use any unique user identifier here.
+     * The recommended way is to set it on app login in set it to null on logout
+     * (to remove the link between the device and the worker)
+     **/
+    HyperTrack.setWorkerHandle(
+        "test_worker_quickstart_flutter_${platformName}");
+
     final JSONObject metadata = JSONObject({
       /**
-       * `driver_handle` is used to link the device and the driver.
-       * You can use any unique user identifier here.
-       * The recommended way is to set it on app login in set it to null on logout
-       * (to remove the link between the device and the driver)
-       **/
-      "driver_handle":
-          JSONString("test_driver_quickstart_flutter_${platformName}"),
-      /**
-       * You can also add any custom data to the metadata.
+       * You can also provide any custom data to the metadata.
        */
       "source": JSONString(name),
       "employee_id": JSONNumber(Math.Random().nextInt(10000).toDouble()),
@@ -60,6 +62,7 @@ class _MyAppState extends State<MyApp> {
     HyperTrack.deviceId.then((deviceId) => _deviceId = deviceId);
     HyperTrack.metadata.then((metadata) => log(metadata.toString()));
     HyperTrack.name.then((name) => log(name));
+    HyperTrack.workerHandle.then((workerHandle) => log(workerHandle));
 
     _initSubscriptions();
   }
