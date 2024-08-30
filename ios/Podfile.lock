@@ -20,7 +20,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/hypertrack_plugin/ios"
 
 SPEC CHECKSUMS:
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   HyperTrack: 755bc0faa935302dfd5e11289b027bff7513bc26
   hypertrack_plugin: b3503582d04839c5de50eb10426ced7b0f9b5651
 
