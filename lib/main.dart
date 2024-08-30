@@ -6,8 +6,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hypertrack_plugin/data_types/hypertrack_error.dart';
 import 'package:hypertrack_plugin/data_types/json.dart';
 import 'package:hypertrack_plugin/data_types/location.dart';
+import 'package:hypertrack_plugin/data_types/location_error.dart';
+import 'package:hypertrack_plugin/data_types/location_with_deviation.dart';
+import 'package:hypertrack_plugin/data_types/order.dart';
 import 'package:hypertrack_plugin/data_types/order_status.dart';
 import 'package:hypertrack_plugin/data_types/result.dart';
 import 'package:hypertrack_plugin/hypertrack.dart';
@@ -24,11 +28,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  String _deviceId = '';
   String _errorsText = '';
   String _isAvailableText = '';
   String _isTrackingStateText = '';
   String _locationText = '';
-  String _deviceId = '';
+  String _ordersText = '';
   String _workerHandle = '';
 
   StreamSubscription? locateSubscription;
@@ -62,7 +67,10 @@ class _MyAppState extends State<MyApp> {
     HyperTrack.deviceId.then((deviceId) => _deviceId = deviceId);
     HyperTrack.metadata.then((metadata) => log(metadata.toString()));
     HyperTrack.name.then((name) => log(name));
-    HyperTrack.workerHandle.then((workerHandle) => log(workerHandle));
+    HyperTrack.workerHandle.then((workerHandle) {
+      log(workerHandle);
+      _workerHandle = workerHandle;
+    });
 
     _initSubscriptions();
   }
@@ -91,6 +99,7 @@ class _MyAppState extends State<MyApp> {
                   _locationSubscriptionView(),
                   _isTrackingView(),
                   _isAvailableView(),
+                  _ordersView(),
                   _addGeotagView(builder),
                   ElevatedButton(
                     onPressed: () async {
@@ -153,11 +162,7 @@ class _MyAppState extends State<MyApp> {
           onPressed: () async {
             final result = await HyperTrack.addGeotag(
                 _testOrderHandle, _testOrderStatus, _testGeotag);
-            if (result is Success) {
-              _showSnackBarMessage(builder, "Geotag added at $result");
-            } else {
-              _showSnackBarMessage(builder, "Geotag error: $result");
-            }
+            _showSnackBarMessage(builder, _formatGeotagResult(result));
           },
           child: Text("Add geotag"),
         ),
@@ -168,11 +173,8 @@ class _MyAppState extends State<MyApp> {
                 _testOrderStatus,
                 _testGeotag,
                 Location(37.422, -122.084));
-            if (result is Success) {
-              _showSnackBarMessage(builder, "Geotag added at $result");
-            } else {
-              _showSnackBarMessage(builder, "Geotag error: $result");
-            }
+            _showSnackBarMessage(
+                builder, _formatGeotagWithExpectedLocationResult(result));
           },
           child: Text("Add geotag with expected location"),
         ),
@@ -245,6 +247,13 @@ class _MyAppState extends State<MyApp> {
             _showSnackBarMessage(builder, result.toString());
           },
           child: Text("Get name"),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            final result = await HyperTrack.orders;
+            _showSnackBarMessage(builder, _formatOrders(result));
+          },
+          child: Text("Get orders"),
         ),
       ],
     );
@@ -323,6 +332,18 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  Widget _ordersView() {
+    return Column(
+      children: [
+        Text(
+          "Orders",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        Text(_ordersText),
+      ],
+    );
+  }
+
   void _initSubscriptions() {
     HyperTrack.isTrackingSubscription.listen((bool isTracking) {
       if (mounted) {
@@ -351,8 +372,7 @@ class _MyAppState extends State<MyApp> {
         if (errors.length == 0) {
           _errorsText = 'No errors';
         } else {
-          _errorsText =
-              errors.map((e) => {e.toString().split('.').last}).join("\n");
+          _errorsText = _formatErrors(errors);
         }
         setState(() {});
       }
@@ -362,7 +382,6 @@ class _MyAppState extends State<MyApp> {
         setState(() {});
       }
     });
-
     HyperTrack.locationSubscription.listen((location) {
       if (mounted) {
         _locationText = location.toString();
@@ -371,6 +390,17 @@ class _MyAppState extends State<MyApp> {
     }).onError((error) {
       if (mounted) {
         _locationText = error.toString();
+        setState(() {});
+      }
+    });
+    HyperTrack.ordersSubscription.listen((orders) {
+      if (mounted) {
+        _ordersText = _formatOrders(orders);
+        setState(() {});
+      }
+    }).onError((error) {
+      if (mounted) {
+        _ordersText = error.toString();
         setState(() {});
       }
     });
@@ -388,6 +418,79 @@ class _MyAppState extends State<MyApp> {
                 .toList(),
           ),
         )));
+  }
+
+  String _formatGeotagResult(Result<Location, LocationError> result) {
+    if (result is Success<Location, LocationError>) {
+      return result.value.toString();
+    } else if (result is Failure<Location, LocationError>) {
+      return _formatLocationError(result.failure);
+    } else {
+      throw Exception("Unknown result type");
+    }
+  }
+
+  String _formatGeotagWithExpectedLocationResult(
+      Result<LocationWithDeviation, LocationError> result) {
+    if (result is Success<LocationWithDeviation, LocationError>) {
+      return result.value.toString();
+    } else if (result is Failure<LocationWithDeviation, LocationError>) {
+      return _formatLocationError(result.failure);
+    } else {
+      throw Exception("Unknown result type");
+    }
+  }
+
+  String _formatLocateResult(Result<Location, Set<HyperTrackError>> result) {
+    if (result is Success<Location, Set<HyperTrackError>>) {
+      return result.value.toString();
+    } else if (result is Failure<Location, Set<HyperTrackError>>) {
+      return _formatErrors(result.failure);
+    } else {
+      throw Exception("Unknown result type");
+    }
+  }
+
+  String _formatLocationResult(Result<Location, LocationError> result) {
+    if (result is Success<Location, LocationError>) {
+      return result.value.toString();
+    } else if (result is Failure<Location, LocationError>) {
+      return _formatLocationError(result.failure);
+    } else {
+      throw Exception("Unknown result type");
+    }
+  }
+
+  String _formatLocationError(LocationError locationError) {
+    if (locationError is NotRunning) {
+      return "NotRunning";
+    } else if (locationError is Starting) {
+      return "Starting";
+    } else if (locationError is Errors) {
+      return _formatErrors(locationError.errors);
+    } else {
+      throw Exception("Unknown error type");
+    }
+  }
+
+  String _formatErrors(Set<HyperTrackError> errors) {
+    return errors.map((e) => {e.toString().split('.').last}).join("\n");
+  }
+
+  String _formatOrders(Map<String, Order> orders) {
+    return orders.entries.map((entry) {
+      return "${entry.value.orderHandle}: ${_formatIsInsideGeofence(entry.value.isInsideGeofence)}";
+    }).join("\n");
+  }
+
+  String _formatIsInsideGeofence(Result<bool, LocationError> result) {
+    if (result is Success<bool, LocationError>) {
+      return result.value.toString();
+    } else if (result is Failure<bool, LocationError>) {
+      return _formatLocationError(result.failure);
+    } else {
+      throw Exception("Unknown result type");
+    }
   }
 }
 
