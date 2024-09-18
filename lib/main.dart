@@ -35,7 +35,6 @@ class _MyAppState extends State<MyApp> {
   String _locationText = '';
   String _ordersText = '';
   String _workerHandle = '';
-
   StreamSubscription? locateSubscription;
 
   @override
