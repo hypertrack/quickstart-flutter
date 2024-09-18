@@ -37,41 +37,6 @@ class _MyAppState extends State<MyApp> {
   String _workerHandle = '';
   StreamSubscription? locateSubscription;
 
-   void  test() async {
-    // / check worker presence synchronously
-//     let activeOrders = await HyperTrack.getOrders()
-//     let currentOrder = activeOrders.get("current_order")
-//     if (currentOrder !== undefined) { handlePresence(currentOrder) }
-//     else { console.log("'current_order' not found") }
-//
-//     // or subscribe to the changes in orders to get the status updates
-//     HyperTrack.subscribeToOrders(orders => {
-//       let let currentOrder = activeOrders.get("current_order")
-//       if (currentOrder !== undefined) { handlePresence(currentOrder) }
-//       else { console.log("'current_order' not found") }
-//     })
-//
-//     // handle worker presence inside the order destination geofence
-//     function handlePresence(isInsideGeofence: Result<boolean, LocationError>) {
-//       switch (isInsideGeofence.type) {
-//         case 'success':
-//           if (isInsideGeofence.value) {
-//             // allow worker to clock in for the shift
-//           } else {
-//             // "to clock in you must be at order destination"
-//           }
-//           break;
-//         case 'failure':
-//           // resolve errors to check for presence
-//           break;
-//       }
-//     }
-
-    
-
-
-  }
-
   @override
   void initState() {
     super.initState();
