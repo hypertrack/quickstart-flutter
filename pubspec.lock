@@ -71,10 +71,10 @@ packages:
     dependency: "direct main"
     description:
       name: hypertrack_plugin
-      sha256: "0cf287b652b4c52959dc6ecc06131ca6664193ec94a495a95fd23ca53c766623"
+      sha256: "0ab6c6a82efadb0ac79b2a7f34c9dbf011138b5faf89a951eb708e74ea4483c7"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.0"
+    version: "2.5.1"
   leak_tracker:
     dependency: transitive
     description:
