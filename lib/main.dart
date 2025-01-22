@@ -111,7 +111,8 @@ class _MyAppState extends State<MyApp> {
                     },
                     child: Text("Locate"),
                   ),
-                  _gettersView(builder)
+                  _gettersView(builder),
+                  _allowMockLocationView(builder),
                 ],
               ),
             )),
@@ -298,6 +299,26 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         _button("Set unavailable", () => HyperTrack.setIsAvailable(false)),
+      ],
+    );
+  }
+
+  Widget _allowMockLocationView(builder) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _button("Allow mock location", () => HyperTrack.setAllowMockLocation(true)),
+            _button("Disallow mock location", () => HyperTrack.setAllowMockLocation(false)),
+          ],
+        ),
+        _button("Get Allow mock location", () async {
+          bool allowMockLocation = await HyperTrack.allowMockLocation;
+          _showSnackBarMessage(builder, "Allow mock location: $allowMockLocation");
+        }),
       ],
     );
   }

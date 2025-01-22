@@ -25,9 +25,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+def appId = "com.hypertrack.quickstart.flutter.android"
+
 android {
     compileSdkVersion 34
-    ndkVersion "21.1.6352462"
+    namespace appId
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -38,7 +40,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.hypertrack.quickstart.flutter.android"
+        applicationId appId
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
