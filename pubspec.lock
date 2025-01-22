@@ -73,7 +73,7 @@ packages:
       path: "../sdk-flutter"
       relative: true
     source: path
-    version: "3.0.0"
+    version: "2.7.0"
   leak_tracker:
     dependency: transitive
     description:
