@@ -251,7 +251,8 @@ class _MyAppState extends State<MyApp> {
         ElevatedButton(
           onPressed: () async {
             final result = await HyperTrack.orders;
-            _showSnackBarMessage(builder, _formatOrders(result));
+            final text = await _formatOrders(result);
+            _showSnackBarMessage(builder, text);
           },
           child: Text("Get orders"),
         ),
@@ -413,9 +414,10 @@ class _MyAppState extends State<MyApp> {
         setState(() {});
       }
     });
-    HyperTrack.ordersSubscription.listen((orders) {
+    HyperTrack.ordersSubscription.listen((orders) async {
       if (mounted) {
-        _ordersText = _formatOrders(orders);
+        final text = await _formatOrders(orders);
+        _ordersText = text;
         setState(() {});
       }
     }).onError((error) {
@@ -497,10 +499,11 @@ class _MyAppState extends State<MyApp> {
     return errors.map((e) => {e.toString().split('.').last}).join("\n");
   }
 
-  String _formatOrders(Map<String, Order> orders) {
-    return orders.entries.map((entry) {
-      return "${entry.value.orderHandle}: ${_formatIsInsideGeofence(entry.value.isInsideGeofence)}";
-    }).join("\n");
+  Future<String> _formatOrders(Map<String, Order> orders) async {
+    return Future.wait(orders.entries.map((entry) async {
+      var isInsideGeofence = await entry.value.isInsideGeofence;
+      return "${entry.value.orderHandle}: ${_formatIsInsideGeofence(isInsideGeofence)}";
+    })).then((values) => values.join("\n"));
   }
 
   String _formatIsInsideGeofence(Result<bool, LocationError> result) {
