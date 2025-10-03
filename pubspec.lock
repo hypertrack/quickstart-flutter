@@ -70,10 +70,11 @@ packages:
   hypertrack_plugin:
     dependency: "direct main"
     description:
-      path: "../sdk-flutter"
-      relative: true
-    source: path
-    version: "3.0.0"
+      name: hypertrack_plugin
+      sha256: "304650e9f0eb6184650eeefbf8ffac05acfc09be3785dc7dd9f6c05f5b43bf73"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.3"
   leak_tracker:
     dependency: transitive
     description:
