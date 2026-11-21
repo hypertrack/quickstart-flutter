@@ -63,7 +63,11 @@ class _MyAppState extends State<MyApp> {
     });
     HyperTrack.setMetadata(metadata);
 
-    HyperTrack.deviceId.then((deviceId) => _deviceId = deviceId);
+    HyperTrack.deviceId.then((deviceId) {
+      if (mounted) {
+        setState(() => _deviceId = deviceId);
+      }
+    });
     HyperTrack.metadata.then((metadata) => log(metadata.toString()));
     HyperTrack.name.then((name) => log(name));
     HyperTrack.workerHandle.then((workerHandle) {
