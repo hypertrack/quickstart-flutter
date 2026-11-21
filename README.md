@@ -1,7 +1,7 @@
 # Flutter Quickstart for HyperTrack SDK
 
 [![GitHub](https://img.shields.io/github/license/hypertrack/quickstart-flutter?color=orange)](./LICENSE)
-[![hypertrack_plugin](https://img.shields.io/badge/hypertrack_plugin-1.1.0-brightgreen.svg)](https://github.com/hypertrack/sdk-flutter)
+[![hypertrack_plugin](https://img.shields.io/badge/hypertrack_plugin-3.3.0-brightgreen.svg)](https://github.com/hypertrack/sdk-flutter)
 
 [HyperTrack](https://www.hypertrack.com) lets you add live location tracking to your mobile app.
 Live location is made available along with ongoing activity, tracking controls and tracking outage with reasons.
